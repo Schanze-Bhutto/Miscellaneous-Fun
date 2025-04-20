@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pink & Purple Countdown Timer</title>
+ 
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+   
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #f8bbd0, #ce93d8);
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      color: #4a148c;
+      position: relative; 
+    }
+
+    /* Container for the entire app */
+    .container {
+      background: #fff0f6;
+      border-radius: 20px;
+      padding: 30px 40px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 8px 24px rgba(149, 38, 236, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Heading */
+    h1 {
+      margin-bottom: 25px;
+      font-weight: 600;
+      font-size: 2.5rem;
+      letter-spacing: 1.2px;
+      color: #880e4f;
+    }
+
+    /* Dropdown styling */
+    select {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 1.1rem;
+      border-radius: 12px;
+      border: 2px solid #ce93d8;
+      background: #fce4ec;
+      color: #880e4f;
+      font-weight: 600;
+      margin-bottom: 40px;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+    select:hover, select:focus {
+      border-color: #880e4f;
+      outline: none;
+    }
+
+    /* Timer circle container */
+    .timer-circle {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin-bottom: 30px;
+    }
+
+    /* SVG circle styling */
+    svg {
+      transform: rotate(-90deg); 
+      width: 220px;
+      height: 220px;
+    }
+
+    /* Background circle */
+    .circle-bg {
+      fill: none;
+      stroke: #f8bbd0;
+      stroke-width: 15;
+    }
+
+    /* Progress circle */
+    .circle-progress {
+      fill: none;
+      stroke: #880e4f;
+      stroke-width: 15;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s linear;
+    }
+
+    /* Time text in center */
+    .time-display {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 3rem;
+      font-weight: 700;
+      color: #880e4f;
+      user-select: none;
+      letter-spacing: 2px;
+    }
+
+    /* Buttons container */
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    /* Pause and Reset buttons */
+    button.pause-reset {
+      flex: 1;
+      margin: 0 8px;
+      padding: 12px 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      color: white;
+      box-shadow: 0 4px 10px rgba(136, 14, 79, 0.4);
+    }
+    button.pause-reset:first-child {
+      background: #ce93d8; 
+    }
+    button.pause-reset:first-child:hover {
+      background: #ab47bc;
+    }
+    button.pause-reset:last-child {
+      background: #f48fb1; 
+    }
+    button.pause-reset:last-child:hover {
+      background: #ec407a;
+    }
+
+    /* Start button */
+    button.start {
+      width: 100%;
+      padding: 15px 0;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(90deg, #f48fb1, #ce93d8);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(204, 105, 172, 0.6);
+      transition: background 0.4s ease;
+    }
+    button.start:hover {
+      background: linear-gradient(90deg, #ec407a, #ab47bc);
+    }
+
+    /* Back button */
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      background-color: #880e4f;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(136, 14, 79, 0.4);
+      transition: background-color 0.3s ease;
+    }
+    .back-btn:hover {
+      background-color: #ab47bc;
+    }
+
+    /* Responsive */
+    @media (max-width: 450px) {
+      .container {
+        padding: 25px 20px;
+      }
+      .timer-circle {
+        width: 180px;
+        height: 180px;
+      }
+      svg {
+        width: 180px;
+        height: 180px;
+      }
+      .time-display {
+        font-size: 2.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="back-btn" onclick="history.back()">←</div>
+
+  <div class="container">
+    <h1>TIMER</h1>
+    <select id="time-select" aria-label="Select countdown time">
+      <option value="300">5 minutes</option>
+      <option value="600">10 minutes</option>
+      <option value="900">15 minutes</option>
+      <option value="1200">20 minutes</option>
+      <option value="1500">25 minutes</option>
+      <option value="1800">30 minutes</option>
+    </select>
+
+    <div class="timer-circle" aria-live="polite" aria-atomic="true">
+      <svg>
+       
+        <circle class="circle-bg" cx="110" cy="110" r="100"></circle>
+        
+        <circle class="circle-progress" cx="110" cy="110" r="100" stroke-dasharray="628" stroke-dashoffset="0"></circle>
+      </svg>
+      <div class="time-display" id="time-display">05:00</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="pause-reset" id="pause-btn" aria-label="Pause timer">Pause</button>
+      <button class="pause-reset" id="reset-btn" aria-label="Reset timer">Reset</button>
+    </div>
+
+    <button class="start" id="start-btn" aria-label="Start timer">Start</button>
+  </div>
+
+  <script>
+    // Get references to DOM elements
+    const timeSelect = document.getElementById('time-select');
+    const timeDisplay = document.getElementById('time-display');
+    const circleProgress = document.querySelector('.circle-progress');
+    const pauseBtn = document.getElementById('pause-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const startBtn = document.getElementById('start-btn');
+
+    // Circle circumference (2 * PI * r) where r=100
+    const circumference = 2 * Math.PI * 100;
+
+    // Initialize stroke dasharray and offset for progress circle
+    circleProgress.style.strokeDasharray = circumference;
+    circleProgress.style.strokeDashoffset = 0;
+
+    // Timer variables
+    let totalTime = parseInt(timeSelect.value); // in seconds
+    let timeLeft = totalTime;
+    let timerInterval = null;
+    let isPaused = false;
+
+    // Format seconds into MM:SS
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    // Update the progress circle and time display
+    function updateTimer() {
+      timeDisplay.textContent = formatTime(timeLeft);
+
+      // Calculate progress (percentage of time left)
+      const progress = timeLeft / totalTime;
+      // strokeDashoffset controls how much of the circle is visible
+      circleProgress.style.strokeDashoffset = circumference * (1 - progress);
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        isPaused = false;
+        startBtn.disabled = false;
+        pauseBtn.disabled = true;
+        alert("Time's up!");
+      }
+    }
+
+    // Start countdown
+    function startTimer() {
+      if (timerInterval) return; // Prevent multiple intervals
+
+      isPaused = false;
+      startBtn.disabled = true;
+      pauseBtn.disabled = false;
+
+      timerInterval = setInterval(() => {
+        if (!isPaused) {
+          timeLeft--;
+          updateTimer();
+
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isPaused = false;
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+          }
+        }
+      }, 1000);
+    }
+
+    // Pause countdown
+    function pauseTimer() {
+      if (!timerInterval) return;
+      isPaused = !isPaused;
+      pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
+    }
+
+    // Reset countdown
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      isPaused = false;
+      timeLeft = totalTime;
+      updateTimer();
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      pauseBtn.textContent = 'Pause';
+    }
+
+    // When user changes the dropdown, reset timer with new time
+    timeSelect.addEventListener('change', () => {
+      totalTime = parseInt(timeSelect.value);
+      resetTimer();
+    });
+
+    // Button event listeners
+    startBtn.addEventListener('click', startTimer);
+    pauseBtn.addEventListener('click', pauseTimer);
+    resetBtn.addEventListener('click', resetTimer);
+
+    // Initialize UI state on page load
+    window.onload = () => {
+      updateTimer();
+      pauseBtn.disabled = true; // Disable pause initially
+    };
+  </script>
+</body>
+</html>

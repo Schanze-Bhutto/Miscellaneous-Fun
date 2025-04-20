@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NUMBER PUZZLE</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+ 
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #f8bbd0, #ce93d8);
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      color: #4a148c;
+    }
+
+    /* Container for the entire app */
+    .container {
+      background: #fff0f6;
+      border-radius: 20px;
+      padding: 30px 40px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 8px 24px rgba(149, 38, 236, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Heading */
+    h1 {
+      margin-bottom: 30px;
+      font-weight: 600;
+      font-size: 2.5rem;
+      letter-spacing: 1.2px;
+      color: #880e4f;
+      text-align: center;
+    }
+
+    /* Board container */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    /* Tile style */
+    .tile {
+      width: 100px;
+      height: 100px;
+      background: #f48fb1;
+      color: white;
+      font-size: 2rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(136, 14, 79, 0.4);
+      transition: transform 0.3s ease;
+    }
+    .tile:hover {
+      transform: scale(1.05);
+    }
+    .empty {
+      background: #ce93d8;
+      cursor: default;
+      box-shadow: none;
+    }
+    .empty:hover {
+      transform: none;
+    }
+
+    /* Reset button */
+    .reset-button {
+      padding: 15px 25px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(90deg, #f48fb1, #ce93d8);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(204, 105, 172, 0.6);
+      transition: background 0.4s ease;
+    }
+    .reset-button:hover {
+      background: linear-gradient(90deg, #ec407a, #ab47bc);
+    }
+
+    /* Congrats popup overlay */
+    .congrats-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(136, 14, 79, 0.6); 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .congrats-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Congrats popup content */
+    .congrats-popup {
+      background: #fff0f6;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 90vw;
+      width: 400px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(149, 38, 236, 0.5);
+    }
+    .congrats-popup h2 {
+      font-size: 3rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #880e4f;
+    }
+    .congrats-popup p {
+      font-size: 1.2rem;
+      color: #4a148c;
+      margin-bottom: 30px;
+    }
+
+    /* Confetti animation */
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #f48fb1;
+      border-radius: 50%;
+      animation: confetti-fall 3s linear infinite;
+    }
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px 20px;
+      }
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+      .board {
+        grid-template-columns: repeat(3, 80px);
+        grid-gap: 8px;
+        margin-bottom: 25px;
+      }
+      .tile {
+        width: 80px;
+        height: 80px;
+        font-size: 1.5rem;
+      }
+      .reset-button {
+        padding: 12px 20px;
+        font-size: 1rem;
+      }
+      .congrats-popup {
+        padding: 30px;
+      }
+      .congrats-popup h2 {
+        font-size: 2.4rem;
+      }
+      .congrats-popup p {
+        font-size: 1rem;
+      }
+    }
+
+    /* BACK BUTTON */
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      background-color: #880e4f;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(136, 14, 79, 0.4);
+      transition: background-color 0.3s ease;
+    }
+    .back-btn:hover {
+      background-color: #ab47bc;
+    }
+  </style>
+</head>
+<body>
+    <div class="back-btn" onclick="history.back()">←</div>
+
+  <div class="container">
+    <h1>Number Puzzle</h1>
+
+    <div class="board" id="board">
+      <!-- Tiles will be generated here -->
+    </div>
+
+    <button class="reset-button" id="reset-btn" aria-label="Reset the puzzle">Reset</button>
+
+    <div class="congrats-overlay" id="congrats-popup">
+      <div class="congrats-popup">
+        <h2>Congratulations!</h2>
+        <p>You solved the puzzle!</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Puzzle variables
+    let tiles = [1, 2, 3, 4, 5, 6, 7, 8, null];
+    let boardSize = 3;
+    let board = document.getElementById('board');
+    let resetButton = document.getElementById('reset-btn');
+    let congratsPopup = document.getElementById('congrats-popup');
+
+    // Initialize the board
+    function initializeBoard() {
+      tiles = shuffle(tiles);
+      renderBoard();
+    }
+
+    // Render the board to the UI
+    function renderBoard() {
+      board.innerHTML = '';
+
+      for (let i = 0; i < tiles.length; i++) {
+        let tile = document.createElement('div');
+        tile.classList.add('tile');
+        tile.textContent = tiles[i];
+
+        if (tiles[i] === null) {
+          tile.classList.add('empty');
+        } else {
+          tile.addEventListener('click', moveTile);
+        }
+
+        tile.dataset.index = i; 
+        board.appendChild(tile);
+      }
+    }
+
+    // Fisher-Yates shuffle algorithm
+    function shuffle(array) {
+      let currentIndex = array.length, randomIndex;
+
+      // While there remain elements to shuffle.
+      while (currentIndex != 0) {
+
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex], array[currentIndex]];
+      }
+
+      return array;
+    }
+
+    // Move tile to empty slot
+    function moveTile() {
+      let tileIndex = parseInt(this.dataset.index);
+      let emptyIndex = tiles.indexOf(null);
+
+      // Check if the move is valid (adjacent to the empty tile)
+      if (isValidMove(tileIndex, emptyIndex)) {
+        // Swap tiles
+        [tiles[tileIndex], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[tileIndex]];
+        renderBoard();
+
+        // Check if puzzle is solved
+        if (isSolved()) {
+          showCongratulations();
+        }
+      }
+    }
+
+    // Check if the tile is next to the empty slot
+    function isValidMove(tileIndex, emptyIndex) {
+      let tileRow = Math.floor(tileIndex / boardSize);
+      let tileCol = tileIndex % boardSize;
+      let emptyRow = Math.floor(emptyIndex / boardSize);
+      let emptyCol = emptyIndex % boardSize;
+
+      return (
+        (Math.abs(tileRow - emptyRow) === 1 && tileCol === emptyCol) ||
+        (Math.abs(tileCol - emptyCol) === 1 && tileRow === emptyRow)
+      );
+    }
+
+    // Check if the puzzle is solved
+    function isSolved() {
+      for (let i = 0; i < tiles.length - 1; i++) {
+        if (tiles[i] !== i + 1) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // Show congratulations message with confetti
+    function showCongratulations() {
+      congratsPopup.classList.add('active');
+      createConfetti(100);
+    }
+
+    // Create confetti elements
+    function createConfetti(num) {
+      let container = document.querySelector('.container');
+
+      for (let i = 0; i < num; i++) {
+        let confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        confetti.style.left = `${Math.random() * 100}%`;
+        confetti.style.animationDelay = `${Math.random() * 2}s`;
+        container.appendChild(confetti);
+      }
+    }
+
+    // Reset the game
+    function resetGame() {
+      congratsPopup.classList.remove('active');
+      // Remove confetti
+      let confettiElements = document.querySelectorAll('.confetti');
+      confettiElements.forEach(confetti => confetti.remove());
+
+      initializeBoard();
+    }
+
+    // Event listeners
+    resetButton.addEventListener('click', resetGame);
+
+    // Initialize game on load
+    initializeBoard();
+  </script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THE DARES GAME</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ffc0cb, #dda0dd);
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 30px;
+      color: #fff;
+      text-shadow: 1px 1px 5px #c46cc4;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 320px;
+      height: 320px;
+    }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 8px solid #fff;
+      position: relative;
+      transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .segment {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      top: 50%;
+      left: 50%;
+      transform-origin: 0% 0%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      padding: 5px;
+      text-align: center;
+    }
+
+    .ticker {
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-bottom: 25px solid white;
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+    }
+
+    .spin-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ff69b4;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 100;
+    }
+
+    .modal.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .popup {
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      max-width: 300px;
+    }
+
+    .popup h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .popup p {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .popup button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 10px;
+      background-color: #ff69b4;
+      color: white;
+      cursor: pointer;
+    }
+
+    .home-link {
+      margin-top: 20px;
+    }
+
+    .home-link a {
+      text-decoration: none;
+      background-color: #fff;
+      color: #ff69b4;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    }
+
+    canvas.confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    /* BACK BUTTON */
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      background-color: #880e4f;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(136, 14, 79, 0.4);
+      transition: background-color 0.3s ease;
+    }
+    .back-btn:hover {
+      background-color: #ab47bc;
+    }
+  </style>
+</head>
+<body>
+  <div class="back-btn" onclick="history.back()">←</div>
+
+
+  <h1>CHOOSE A DARE</h1>
+  <div class="wheel-container">
+    <div class="ticker"></div>
+    <div class="wheel" id="wheel"></div>
+    <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN</button>
+  </div>
+  
+
+  <div class="modal" id="modal">
+    <div class="popup">
+      <h2>YOUR DARE IS</h2>
+      <p id="dareText">Dare</p>
+      <button onclick="closeModal()">Okay</button>
+      <button onclick="spinWheel()">Re-spin</button>
+    </div>
+  </div>
+
+  <canvas class="confetti" id="confetti"></canvas>
+
+  <script>
+    const dares = [
+      "Do 10 jumping jacks",
+      "Speak in rhyme for 2 minutes",
+      "Compliment everyone in the room",
+      "Do a silly dance",
+      "Act like a cat",
+      "Tell a fun fact",
+      "Pretend to be a celebrity",
+      "Make a weird sound"
+    ];
+
+    const wheel = document.getElementById("wheel");
+    const modal = document.getElementById("modal");
+    const dareText = document.getElementById("dareText");
+    const spinBtn = document.getElementById("spinBtn");
+
+    const numSegments = dares.length;
+    const angle = 360 / numSegments;
+
+    dares.forEach((dare, i) => {
+      const segment = document.createElement("div");
+      segment.className = "segment";
+      segment.textContent = dare;
+      const rotateAngle = angle * i;
+      segment.style.transform = `rotate(${rotateAngle}deg) translate(-100%)`;
+      segment.style.background = i % 2 === 0 ? "#ff9ddf" : "#c97ee9";
+      wheel.appendChild(segment);
+    });
+
+    let currentRotation = 0;
+
+    function spinWheel() {
+      modal.classList.remove("active");
+      spinBtn.disabled = true;
+
+      const randomIndex = Math.floor(Math.random() * numSegments);
+      const spinDeg = 360 * 5 + (360 - angle * randomIndex - angle / 2);
+
+      currentRotation += spinDeg;
+      wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+      setTimeout(() => {
+        dareText.textContent = dares[randomIndex];
+        modal.classList.add("active");
+        spinBtn.disabled = false;
+        startConfetti();
+        setTimeout(stopConfetti, 3000);
+      }, 4000);
+    }
+
+    function closeModal() {
+      modal.classList.remove("active");
+    }
+
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    let confetti = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function createConfetti() {
+      for (let i = 0; i < 150; i++) {
+        confetti.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          r: Math.random() * 6 + 4,
+          d: Math.random() * 100,
+          color: `hsl(${Math.random() * 360}, 70%, 60%)`,
+          tilt: Math.random() * 10 - 10,
+          tiltAngle: 0,
+          tiltAngleIncrement: (Math.random() * 0.07) + 0.05
+        });
+      }
+    }
+
+    function drawConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      confetti.forEach(c => {
+        ctx.beginPath();
+        ctx.lineWidth = c.r;
+        ctx.strokeStyle = c.color;
+        ctx.moveTo(c.x + c.tilt + c.r / 2, c.y);
+        ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 2);
+        ctx.stroke();
+      });
+      updateConfetti();
+    }
+
+    function updateConfetti() {
+      confetti.forEach(c => {
+        c.tiltAngle += c.tiltAngleIncrement;
+        c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+        c.tilt = Math.sin(c.tiltAngle - (c.d / 3));
+        if (c.y > canvas.height) {
+          c.y = -10;
+          c.x = Math.random() * canvas.width;
+        }
+      });
+    }
+
+    let animation;
+
+    function startConfetti() {
+      confetti = [];
+      createConfetti();
+      animation = setInterval(drawConfetti, 20);
+    }
+
+    function stopConfetti() {
+      clearInterval(animation);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  </script>
+</body>
+</html>
