@@ -2,6 +2,10 @@
 
 Miscellaneous Fun is a vibrant and light-hearted web application designed as a digital playground for anyone seeking a break from the overstimulation of social media and daily chaos. Built with simplicity in mind, it’s a space to fidget, refresh, and enjoy casual interactions with minimal complexity. There’s no productivity pressure here—just a fun, friendly escape packed with interactive elements, nostalgic games, and now even a chatbot to chat with when you're bored!
 
+🎥 App Video 
+this is how our app looks!
+https://github.com/Schanze-Bhutto/Miscellaneous-Fun/raw/refs/heads/main/app-video/APP%20VIDEO.mp4
+
 ✨ PURPOSE
 
 In an era where digital experiences are increasingly fast-paced and hyper-stimulating, Miscellaneous Fun was created with a contrasting purpose—to offer a calming, playful alternative. This app is a heartfelt project built “just for fun,” embracing the idea that not every website needs to have a structured, professional purpose. Some can simply exist to make people smile—and that’s exactly what this one does.
